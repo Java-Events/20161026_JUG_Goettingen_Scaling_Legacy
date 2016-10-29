@@ -3,7 +3,9 @@ package junit.org.rapidpm.event.mapdb.server.rest;
 import com.google.gson.Gson;
 import junit.org.rapidpm.event.mapdb.BasicRestTest;
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.rapidpm.event.mapdb.server.rest.Store;
 
 import javax.ws.rs.client.Client;
@@ -24,26 +26,42 @@ import java.util.List;
  *
  * Created by RapidPM - Team on 27.10.16.
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StoreTest extends BasicRestTest {
+  private static final int RANGE = 1_000;
+  private static final String GENERATE_BASIC_REQ_URL = generateBasicReqURL(Store.class);
+  public static final int START_KEY = 3333;
 
   @Test
-  public void testApplicationPath() throws Exception {
+  public void test001() throws Exception {
     Client client = ClientBuilder.newClient();
-    final String generateBasicReqURL = generateBasicReqURL(Store.class);
-    System.out.println("generateBasicReqURL = " + generateBasicReqURL);
-    final int range = 1_000;
     String val = client
-        .target(generateBasicReqURL)
-        .path(Store.KEY)
-        .path(3333 +"")
-        .path(range +"")
+        .target(GENERATE_BASIC_REQ_URL)
+        .path(Store.FILLMAP)
+        .path(START_KEY + "")
+        .path(RANGE + "")
         .request()
         .get(String.class);
     System.out.println("val = " + val);
-
-    final List<String> fromJson = new Gson().fromJson(val, List.class);
-
-    Assert.assertEquals(fromJson.size(), range);
+    Assert.assertEquals(val, "DONE");
     client.close();
   }
+
+  @Test
+  public void test002() throws Exception {
+    Client client = ClientBuilder.newClient();
+    String val = client
+        .target(GENERATE_BASIC_REQ_URL)
+        .path(Store.GET)
+        .path(START_KEY + "")
+        .path(RANGE + "")
+        .request()
+        .get(String.class);
+    System.out.println("val = " + val);
+    final List<String> fromJson = new Gson().fromJson(val, List.class);
+    Assert.assertEquals(fromJson.size(), RANGE);
+    client.close();
+  }
+
+
 }

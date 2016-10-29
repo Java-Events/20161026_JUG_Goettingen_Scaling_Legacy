@@ -32,15 +32,19 @@ import java.util.List;
 public class Store {
   public static final String KEY = "key";
   public static final String RANGE = "range";
+  public static final String GET = "get";
+  public static final String FILLMAP = "fillmap";
+  private static final String AMMOUNT = "ammount";
+  private static final String STARTKEY = "startkey";
 
   // crypted values -> AES -> json
 
   @Inject private StorageService storageService;
 
   @GET()
-  @Path("get/{" + KEY + "}/{"+RANGE+"}")
+  @Path(GET + "/{" + KEY + "}/{" + RANGE + "}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String get(@PathParam(KEY) final String key,@PathParam(RANGE) final String range) {
+  public String get(@PathParam(KEY) final String key, @PathParam(RANGE) final String range) {
     final LocalDateTime nowStart = LocalDateTime.now();
     final int parseIntKey = Integer.parseInt(key);
     final int parseIntRange = Integer.parseInt(range);
@@ -51,12 +55,14 @@ public class Store {
     return new Gson().toJson(loadRange);
   }
 
-//  @GET()
-//  @Path("createNewMap/{key}")
-//  @Produces("text/plain")
-//  public String createNewMap(){
-//
-//  }
+  @GET()
+  @Path(FILLMAP + "/{" + STARTKEY + "}/{" + AMMOUNT + "}")
+  @Produces("text/plain")
+  public String createNewMap(@PathParam(STARTKEY) final Integer startKey,
+                             @PathParam(AMMOUNT) final Integer ammount) {
+    storageService.fillMapWithAmmount(startKey, ammount);
+    return "DONE";
+  }
 
 
 }

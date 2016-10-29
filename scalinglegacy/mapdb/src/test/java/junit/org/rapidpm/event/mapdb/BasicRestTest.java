@@ -30,7 +30,7 @@ import org.rapidpm.microservice.test.RestUtils;
 
 public class BasicRestTest {
 
-  final RestUtils restUtils = new RestUtils();
+  final static RestUtils restUtils = new RestUtils();
 
   @BeforeClass
   public static void setUpClass() {
@@ -57,7 +57,7 @@ public class BasicRestTest {
     DI.clearReflectionModel();
   }
 
-  public String generateBasicReqURL(Class restClass) {
+  public static String generateBasicReqURL(Class restClass) {
     final String restAppPath = MainUndertow.CONTEXT_PATH_REST;
     return restUtils.generateBasicReqURL(restClass, restAppPath);
   }

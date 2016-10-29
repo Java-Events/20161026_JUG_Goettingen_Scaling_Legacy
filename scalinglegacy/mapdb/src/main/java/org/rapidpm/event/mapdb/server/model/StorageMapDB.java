@@ -5,6 +5,11 @@ import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Copyright (C) 2010 RapidPM
@@ -24,23 +29,43 @@ public class StorageMapDB {
 
   @PostConstruct
   private void postConstruct() {
-    map001 = (HTreeMap<Integer, String>) db
-        .hashMap("map001")
-        .createOrOpen();
+    System.out.println("postConstruct => ");
+
+    final Path dataPath = FileSystems.getDefault().getPath("_data", "_tmp");
+    try {
+      final Path directories = Files.createDirectories(dataPath);
+      System.out.printf("directories - " + directories);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    if (db == null) {
+      //map001.close();
+      //db.close();
+      db = DBMaker
+//        .fileDB("_data/_tmp/file.db")
+          .fileDB(new File(dataPath.toFile(), "file.db"))
+          .transactionEnable()
+          .closeOnJvmShutdown()
+          .fileDeleteAfterClose()
+          .make();
+
+      map001 = (HTreeMap<Integer, String>) db
+          .hashMap("map001")
+          .createOrOpen();
+    }
+
   }
 
+  public void commit() {
+    db.commit();
+  }
 
   public HTreeMap<Integer, String> map001() {
     return map001;
   }
 
   private HTreeMap<Integer, String> map001;
-
-  private final DB db = DBMaker
-      .fileDB("_data/_tmp/file.db")
-      .fileMmapEnableIfSupported()
-//        .transactionEnable()
-      .make();
+  private DB db;
 
 
 }

@@ -1,5 +1,6 @@
 package org.rapidpm.event.mapdb.server.services;
 
+import org.mapdb.HTreeMap;
 import org.rapidpm.event.mapdb.server.model.StorageMapDB;
 
 import javax.inject.Inject;
@@ -36,5 +37,11 @@ public class StorageService {
   }
 
 
-
+  public void fillMapWithAmmount(final Integer startKey, final Integer ammount) {
+    final HTreeMap<Integer, String> map001 = storageMapDB.map001();
+    IntStream
+        .range(startKey, ammount)
+        .forEach(e -> map001.put(e, "counted until " + e));
+    storageMapDB.commit();
+  }
 }
